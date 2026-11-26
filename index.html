@@ -1,63 +1,402 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>System One · Playground</title>
-<style>
-:root{color-scheme:light;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#182b29;background:#f2f6f5}*{box-sizing:border-box}body{margin:0}header{padding:24px 5%;border-bottom:1px solid #d6e2de;background:white;display:flex;align-items:center;gap:12px}.logo{background:#155d50;color:white;border-radius:10px;padding:10px;font-weight:750}header span{color:#657872;font-size:14px}main{max-width:1180px;margin:48px auto;padding:0 24px}h1{font-size:36px;letter-spacing:-1.3px;margin:0 0 10px}p{color:#61756e;line-height:1.6}.layout{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;margin-top:30px;align-items:start}.card{background:white;border:1px solid #d9e4df;border-radius:16px;padding:28px;box-shadow:0 4px 16px #153c2905}h2{font-size:18px;margin:0 0 24px}label{display:block;font-size:14px;font-weight:600;margin-bottom:8px}input,textarea,select{width:100%;font:inherit;padding:12px;border:1px solid #cbd9d2;border-radius:8px;background:#fff;color:inherit}textarea{resize:vertical;min-height:105px}input:focus,textarea:focus,select:focus{outline:2px solid #268773;outline-offset:2px}select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23182b29' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}.field{margin-bottom:22px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}.hint{font-size:14px;margin:8px 0 16px}.row{display:flex;gap:8px;margin:10px 0;align-items:center}.row input{min-width:0}.row input:first-child{flex:1}.row input:nth-child(2){flex:1.5}button{font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1px solid #cbd9d2;border-radius:8px;padding:11px 15px;background:white;color:#244b40}button:hover{background:#edf5f1}button:disabled{opacity:.6;cursor:wait}.primary{background:#155d50;color:white;border:0;width:100%;margin-top:24px;padding:14px}.primary:hover{background:#104b40}.remove{padding:10px;flex:none}.output{min-height:300px}.empty{padding:48px 10px;text-align:center;color:#71847e}.result{font-size:36px;font-weight:650;overflow-wrap:anywhere;margin:20px 0;color:#155d50}pre{background:#f4f7f5;border:1px solid #e1e9e5;padding:16px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.6;max-height:550px;overflow:auto}.status{font-size:14px;color:#61756e}.error{color:#a32929;background:#fff1f0;border-radius:8px;padding:15px;white-space:pre-wrap}summary{cursor:pointer;font-size:14px;color:#50685e;margin-top:24px}.badge{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;color:#327966;font-weight:700;margin-bottom:12px}fieldset{border:0;padding:0;margin:0;min-width:0}[hidden]{display:none!important}@media(max-width:760px){main{margin:30px auto}.layout{grid-template-columns:1fr}.card{padding:22px}.pair{grid-template-columns:1fr}h1{font-size:30px}.row{flex-wrap:wrap}.row input{flex-basis:35%}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>System One · Playground</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #182b29;
+      background: #f2f6f5
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0
+    }
+
+    header {
+      padding: 24px 5%;
+      border-bottom: 1px solid #d6e2de;
+      background: white;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .logo {
+      background: #155d50;
+      color: white;
+      border-radius: 10px;
+      padding: 10px;
+      font-weight: 750
+    }
+
+    header span {
+      color: #657872;
+      font-size: 14px
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 48px auto;
+      padding: 0 24px
+    }
+
+    h1 {
+      font-size: 36px;
+      letter-spacing: -1.3px;
+      margin: 0 0 10px
+    }
+
+    p {
+      color: #61756e;
+      line-height: 1.6
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 24px;
+      margin-top: 30px;
+      align-items: start
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #d9e4df;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 16px #153c2905
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 0 0 24px
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      font: inherit;
+      padding: 12px;
+      border: 1px solid #cbd9d2;
+      border-radius: 8px;
+      background: #fff;
+      color: inherit
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 105px
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: 2px solid #268773;
+      outline-offset: 2px
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23182b29' stroke-width='2'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center
+    }
+
+    .field {
+      margin-bottom: 22px
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .hint {
+      font-size: 14px;
+      margin: 8px 0 16px
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      margin: 10px 0;
+      align-items: center
+    }
+
+    .row input {
+      min-width: 0
+    }
+
+    .row input:first-child {
+      flex: 1
+    }
+
+    .row input:nth-child(2) {
+      flex: 1.5
+    }
+
+    button {
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #cbd9d2;
+      border-radius: 8px;
+      padding: 11px 15px;
+      background: white;
+      color: #244b40
+    }
+
+    button:hover {
+      background: #edf5f1
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait
+    }
+
+    .primary {
+      background: #155d50;
+      color: white;
+      border: 0;
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px
+    }
+
+    .primary:hover {
+      background: #104b40
+    }
+
+    .remove {
+      padding: 10px;
+      flex: none
+    }
+
+    .output {
+      min-height: 300px
+    }
+
+    .empty {
+      padding: 48px 10px;
+      text-align: center;
+      color: #71847e
+    }
+
+    .result {
+      font-size: 36px;
+      font-weight: 650;
+      overflow-wrap: anywhere;
+      margin: 20px 0;
+      color: #155d50
+    }
+
+    pre {
+      background: #f4f7f5;
+      border: 1px solid #e1e9e5;
+      padding: 16px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+      line-height: 1.6;
+      max-height: 550px;
+      overflow: auto
+    }
+
+    .status {
+      font-size: 14px;
+      color: #61756e
+    }
+
+    .error {
+      color: #a32929;
+      background: #fff1f0;
+      border-radius: 8px;
+      padding: 15px;
+      white-space: pre-wrap
+    }
+
+    summary {
+      cursor: pointer;
+      font-size: 14px;
+      color: #50685e;
+      margin-top: 24px
+    }
+
+    .badge {
+      font-size: 12px;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      color: #327966;
+      font-weight: 700;
+      margin-bottom: 12px
+    }
+
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      min-width: 0
+    }
+
+    [hidden] {
+      display: none !important
+    }
+
+    @media(max-width:760px) {
+      main {
+        margin: 30px auto
+      }
+
+      .layout {
+        grid-template-columns: 1fr
+      }
+
+      .card {
+        padding: 22px
+      }
+
+      .pair {
+        grid-template-columns: 1fr
+      }
+
+      h1 {
+        font-size: 30px
+      }
+
+      .row {
+        flex-wrap: wrap
+      }
+
+      .row input {
+        flex-basis: 35%
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header><div class="logo">S1</div><strong>System One</strong><span>/ Playground</span></header>
-<main><div class="badge">Local inference playground</div><h1>Turn context into a decision.</h1><p>Choose an output type, define your criteria, and let your model evaluate.</p>
-<div class="layout">
-<form id="form" class="card"><h2>Configure your question</h2><fieldset id="fields">
-<div class="pair"><div class="field"><label for="model">Model</label><input id="model" value="nimble" required></div><div class="field"><label for="type">Output type</label><select id="type"><option value="noul">noul</option><option value="choice" selected>choice</option><option value="score">score</option></select></div></div>
-<div class="field"><label for="state">Context / state</label><textarea id="state" placeholder="Our checkout has returned 500 errors since 9am." required></textarea></div>
-<div class="field"><label for="instructions">Question / instructions</label><textarea id="instructions" placeholder="Which team should handle this ticket?" required></textarea></div>
-<section id="noul" hidden><label>True / false criteria</label><p class="hint">Optional. Define both outcomes, or leave both blank to use the question alone.</p><div class="field"><label for="true">True description</label><input id="true" placeholder="The statement is true when…"></div><div class="field"><label for="false">False description</label><input id="false" placeholder="The statement is false when…"></div></section>
-<section id="choice"><label>Choices</label><p class="hint">Give each choice a unique name and an optional description.</p><div id="choices"></div><button type="button" id="add-choice">+ Add choice</button></section>
-<section id="score" hidden><label>Score criteria</label><p class="hint">List descriptions from lowest to highest. Scores start at 0 and may be fractional.</p><div id="scores"></div><button type="button" id="add-score">+ Add score level</button></section>
-</fieldset><button class="primary" id="generate">Generate response</button></form>
-<aside class="card output" aria-busy="false" id="output"><h2>Response</h2><div id="status" class="status" role="status" aria-live="polite">Ready when you are</div><div id="empty" class="empty">Your model’s answer will appear here.<br><small>Responses include probabilities and raw JSON.</small></div><div id="error" class="error" role="alert" hidden></div><div id="result" hidden><div id="answer" class="result"></div><div id="details"></div><details open><summary>Full response JSON</summary><pre id="json"></pre></details></div></aside>
-</div></main>
-<script>
-const $ = id => document.getElementById(id);
-function addRow(kind, values = []) {
-  const row = document.createElement('div'); row.className = 'row';
-  const names = kind === 'choice' ? ['Choice name', 'Description (optional)'] : ['Score description'];
-  names.forEach((name, i) => {const input = document.createElement('input');input.placeholder = name;input.setAttribute('aria-label', name);input.value = values[i] || '';input.required = i === 0;row.append(input);});
-  const remove = document.createElement('button');remove.type = 'button';remove.className = 'remove';remove.textContent = '×';remove.setAttribute('aria-label','Remove ' + kind);remove.onclick = () => row.remove();row.append(remove);
-  $(kind === 'choice' ? 'choices' : 'scores').append(row);
-}
-function setType() {
-  ['noul','choice','score'].forEach(kind => {const section = $(kind);section.hidden = kind !== $('type').value;section.querySelectorAll('input,button').forEach(input => input.disabled = section.hidden);});
-}
-addRow('choice', ['billing','Payments and refunds']);addRow('choice',['technical','Software errors']);
-addRow('score',['Low']);addRow('score',['Medium']);addRow('score',['High']);
-$('add-choice').onclick = () => addRow('choice');$('add-score').onclick = () => addRow('score');$('type').onchange = setType;setType();
-$('form').onsubmit = async event => {
-  event.preventDefault();
-  const type = $('type').value;
-  let criteria;
-  if(type === 'choice') criteria = [...$('choices').children].map(row => ({key:row.children[0].value,description:row.children[1].value}));
-  if(type === 'score') criteria = [...$('scores').children].map(row => row.children[0].value);
-  if(type === 'noul') criteria = $('true').value.trim() || $('false').value.trim() ? {true:$('true').value,false:$('false').value} : null;
-  const payload = {model:$('model').value,state:$('state').value,instructions:$('instructions').value,type,criteria};
-  $('fields').disabled = true;$('generate').disabled = true;$('generate').textContent = 'Generating…';$('output').setAttribute('aria-busy','true');
-  $('error').hidden = true;$('result').hidden = true;$('empty').hidden = true;$('status').textContent = 'Evaluating your question…';
-  const started = performance.now();
-  try {
-    const response = await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const data = await response.json();if(!response.ok) throw new Error(data.error || 'Request failed.');
-    const answer = data.answers.output_response;
-    $('answer').textContent = type === 'choice' ? answer.choice : type === 'noul' ? `${(answer.noul * 100).toFixed(1)}% true` : String(answer.score);
-    $('details').replaceChildren();
-    if(answer.confidence != null){const p=document.createElement('p');p.textContent=`Confidence: ${(answer.confidence*100).toFixed(1)}%`;$('details').append(p);}
-    if(answer.probabilities){Object.entries(answer.probabilities).forEach(([key,value])=>{const p=document.createElement('p');p.textContent=`${key}${answer.legend?.[key] ? ' · '+answer.legend[key] : ''}: ${(value*100).toFixed(1)}%`;$('details').append(p);});}
-    $('json').textContent=JSON.stringify(data,null,2);$('result').hidden=false;$('status').textContent=`Completed in ${((performance.now()-started)/1000).toFixed(2)}s · ${data.model}`;
-  } catch(error) {$('error').textContent=error.message;$('error').hidden=false;$('status').textContent='Generation failed';}
-  finally {$('fields').disabled=false;setType();$('generate').disabled=false;$('generate').textContent='Generate response';$('output').setAttribute('aria-busy','false');}
-};
-</script>
-</body></html>
+  <header>
+    <div class="logo">S1</div><strong>System One</strong><span>/ Playground</span>
+  </header>
+  <main>
+    <div class="badge">Local inference playground</div>
+    <h1>Turn context into a decision.</h1>
+    <p>Choose an output type, define your criteria, and let your model evaluate.</p>
+    <div class="layout">
+      <form id="form" class="card">
+        <h2>Configure your question</h2>
+        <fieldset id="fields">
+          <div class="pair">
+            <div class="field"><label for="model">Model</label><select id="model" required>
+                <option value="nimble:latest" selected>nimble:latest</option>
+                <option value="laya:latest">laya:latest</option>
+                <option value="pplx-decider-flash:latest">pplx-decider-flash:latest</option>
+                <option value="tev1:latest">tev1:latest</option>
+              </select></div>
+            <div class="field"><label for="type">Output type</label><select id="type">
+                <option value="noul">noul</option>
+                <option value="choice" selected>choice</option>
+                <option value="score">score</option>
+              </select></div>
+          </div>
+          <div class="field"><label for="state">Context / state</label><textarea id="state"
+              placeholder="Our checkout has returned 500 errors since 9am." required></textarea></div>
+          <div class="field"><label for="instructions">Question / instructions</label><textarea id="instructions"
+              placeholder="Which team should handle this ticket?" required></textarea></div>
+          <section id="noul" hidden><label>True / false criteria</label>
+            <p class="hint">Optional. Define both outcomes, or leave both blank to use the question alone.</p>
+            <div class="field"><label for="true">True description</label><input id="true"
+                placeholder="The statement is true when…"></div>
+            <div class="field"><label for="false">False description</label><input id="false"
+                placeholder="The statement is false when…"></div>
+          </section>
+          <section id="choice"><label>Choices</label>
+            <p class="hint">Give each choice a unique name and an optional description.</p>
+            <div id="choices"></div><button type="button" id="add-choice">+ Add choice</button>
+          </section>
+          <section id="score" hidden><label>Score criteria</label>
+            <p class="hint">List descriptions from lowest to highest. Scores start at 0 and may be fractional.</p>
+            <div id="scores"></div><button type="button" id="add-score">+ Add score level</button>
+          </section>
+        </fieldset><button class="primary" id="generate">Generate response</button>
+      </form>
+      <aside class="card output" aria-busy="false" id="output">
+        <h2>Response</h2>
+        <div id="status" class="status" role="status" aria-live="polite">Ready when you are</div>
+        <div id="empty" class="empty">Your model’s answer will appear here.<br><small>Responses include probabilities
+            and raw JSON.</small></div>
+        <div id="error" class="error" role="alert" hidden></div>
+        <div id="result" hidden>
+          <div id="answer" class="result"></div>
+          <div id="details"></div>
+          <details open>
+            <summary>Full response JSON</summary>
+            <pre id="json"></pre>
+          </details>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <script>
+    const $ = id => document.getElementById(id);
+    function addRow(kind, values = []) {
+      const row = document.createElement('div'); row.className = 'row';
+      const names = kind === 'choice' ? ['Choice name', 'Description (optional)'] : ['Score description'];
+      names.forEach((name, i) => { const input = document.createElement('input'); input.placeholder = name; input.setAttribute('aria-label', name); input.value = values[i] || ''; input.required = i === 0; row.append(input); });
+      const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'remove'; remove.textContent = '×'; remove.setAttribute('aria-label', 'Remove ' + kind); remove.onclick = () => row.remove(); row.append(remove);
+      $(kind === 'choice' ? 'choices' : 'scores').append(row);
+    }
+    function setType() {
+      ['noul', 'choice', 'score'].forEach(kind => { const section = $(kind); section.hidden = kind !== $('type').value; section.querySelectorAll('input,button').forEach(input => input.disabled = section.hidden); });
+    }
+    addRow('choice', ['billing', 'Payments and refunds']); addRow('choice', ['technical', 'Software errors']);
+    addRow('score', ['Low']); addRow('score', ['Medium']); addRow('score', ['High']);
+    $('add-choice').onclick = () => addRow('choice'); $('add-score').onclick = () => addRow('score'); $('type').onchange = setType; setType();
+    $('form').onsubmit = async event => {
+      event.preventDefault();
+      const type = $('type').value;
+      let criteria;
+      if (type === 'choice') criteria = [...$('choices').children].map(row => ({ key: row.children[0].value, description: row.children[1].value }));
+      if (type === 'score') criteria = [...$('scores').children].map(row => row.children[0].value);
+      if (type === 'noul') criteria = $('true').value.trim() || $('false').value.trim() ? { true: $('true').value, false: $('false').value } : null;
+      const payload = { model: $('model').value, state: $('state').value, instructions: $('instructions').value, type, criteria };
+      $('fields').disabled = true; $('generate').disabled = true; $('generate').textContent = 'Generating…'; $('output').setAttribute('aria-busy', 'true');
+      $('error').hidden = true; $('result').hidden = true; $('empty').hidden = true; $('status').textContent = 'Evaluating your question…';
+      const started = performance.now();
+      try {
+        const response = await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Request failed.');
+        const answer = data.answers.output_response;
+        $('answer').textContent = type === 'choice' ? answer.choice : type === 'noul' ? `${(answer.noul * 100).toFixed(1)}% true` : String(answer.score);
+        $('details').replaceChildren();
+        if (answer.confidence != null) { const p = document.createElement('p'); p.textContent = `Confidence: ${(answer.confidence * 100).toFixed(1)}%`; $('details').append(p); }
+        if (answer.probabilities) { Object.entries(answer.probabilities).forEach(([key, value]) => { const p = document.createElement('p'); p.textContent = `${key}${answer.legend?.[key] ? ' · ' + answer.legend[key] : ''}: ${(value * 100).toFixed(1)}%`; $('details').append(p); }); }
+        $('json').textContent = JSON.stringify(data, null, 2); $('result').hidden = false; $('status').textContent = `Completed in ${((performance.now() - started) / 1000).toFixed(2)}s · ${data.model}`;
+      } catch (error) { $('error').textContent = error.message; $('error').hidden = false; $('status').textContent = 'Generation failed'; }
+      finally { $('fields').disabled = false; setType(); $('generate').disabled = false; $('generate').textContent = 'Generate response'; $('output').setAttribute('aria-busy', 'false'); }
+    };
+  </script>
+</body>
+
+</html>
