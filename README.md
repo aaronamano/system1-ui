@@ -35,7 +35,7 @@ Your installed Ollama client and server must support `systemone` / `/v1/systemon
 
 ## Use
 
-Select a model from the **Model** dropdown:
+Check one or more models under **Models**:
 
 - `nimble:latest` (default)
 - `laya:latest`
@@ -48,12 +48,14 @@ Enter your **Context / state** and **Question / instructions**, then select an *
 - **choice:** add/remove named choices with optional descriptions. Names must be unique.
 - **score:** add/remove descriptions ordered lowest to highest. Scores are zero-based and may be fractional.
 
-Click **Generate response**. The page displays the answer, available probabilities/confidence, and full response JSON. Errors appear in the response panel. Ollama requests use a 120-second timeout.
+Click **Generate responses** to run the same question and criteria on every selected model. Each model has its own panel showing its answer, available probabilities/confidence, elapsed time, and expandable response JSON. Panels update independently, so an error from one model does not hide other results. Ollama requests use a 120-second timeout.
+
+Under **Show responses**, uncheck a model to hide its panel and check it again to restore the response without rerunning it. These visibility controls are separate from the models selected for generation. Generating again replaces the previous panels.
 
 This server binds to localhost for local use. It calls the Python library directly; no shell command is executed.
 
 ## Checks
 
 ```sh
-python3 -m test_app -v
+python3 -m unittest -v
 ```

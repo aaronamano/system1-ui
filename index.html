@@ -63,9 +63,20 @@
     .status { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
     .empty { padding: 54px 0 30px; color: var(--text); max-width: 34ch; }
     .empty small { display: block; margin-top: 12px; font-size: 14px; color: var(--muted); }
-    #result { margin-top: 24px; }
+    .comparison { min-width: 0; }
+    .comparison > h2 { margin-bottom: 12px; }
+    .model-picker legend, #visibility legend { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .check-label { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: 0; overflow-wrap: anywhere; cursor: pointer; }
+    .check-label input { width: 18px; height: 18px; padding: 0; flex: none; accent-color: var(--lavender); }
+    #visibility { margin: 24px 0; }
+    #visibility-options { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+    .response-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 20px; margin-top: 24px; }
+    .response-panel { min-width: 0; padding: 24px; background: #27252b; border: 1px solid var(--border); border-radius: 12px; }
+    .response-panel h3 { font-size: 17px; margin: 0 0 12px; overflow-wrap: anywhere; }
+    .response-panel .result { margin-top: 20px; }
+    @media(min-width:1100px) { main, header { max-width: 1500px; } .layout { grid-template-columns: minmax(360px, 440px) minmax(0, 1fr); } }
     .result { background: #2c332e; border-left: 3px solid var(--sage); border-radius: 3px 12px 12px 3px; padding: 22px; color: var(--sage); font-size: clamp(28px, 4vw, 38px); font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
-    #details p { font-size: 14px; margin: 14px 0; overflow-wrap: anywhere; }
+    .response-details p { font-size: 14px; margin: 14px 0; overflow-wrap: anywhere; }
     pre { background: var(--background); color: #d6cbdc; border: 1px solid var(--border); padding: 18px; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.7 "SFMono-Regular", Consolas, monospace; max-height: 500px; overflow: auto; }
     .error { margin-top: 24px; color: var(--rose); background: #3c2a33; border: 1px solid #8c5966; border-radius: 8px; padding: 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
     summary { cursor: pointer; font-size: 14px; color: var(--lavender); margin-top: 26px; }
@@ -101,12 +112,14 @@
         <h2>Configure your question</h2>
         <fieldset id="fields">
           <div class="pair">
-            <div class="field"><label for="model">Model</label><select id="model" required>
-                <option value="nimble:latest" selected>nimble:latest</option>
-                <option value="laya:latest">laya:latest</option>
-                <option value="pplx-decider-flash:latest">pplx-decider-flash:latest</option>
-                <option value="tev1:latest">tev1:latest</option>
-              </select></div>
+            <fieldset class="field model-picker"><legend>Models</legend>
+              <label class="check-label"><input type="checkbox" name="models" value="nimble:latest" checked>nimble:latest</label>
+              <label class="check-label"><input type="checkbox" name="models" value="laya:latest">laya:latest</label>
+              <label class="check-label"><input type="checkbox" name="models" value="pplx-decider-flash:latest">pplx-decider-flash:latest</label>
+              <label class="check-label"><input type="checkbox" name="models" value="tev1:latest">tev1:latest</label>
+              <p class="hint">Select one or more models to compare.</p>
+              <p id="model-error" class="error" role="alert" hidden>Select at least one model.</p>
+            </fieldset>
             <div class="field"><label for="type">Output type</label><select id="type">
                 <option value="noul">noul</option>
                 <option value="choice" selected>choice</option>
@@ -134,21 +147,15 @@
             <p class="hint">List descriptions from lowest to highest. Scores start at 0 and may be fractional.</p>
             <div id="scores"></div><button type="button" id="add-score">+ Add score level</button>
           </section>
-        </fieldset><button class="primary" id="generate">Generate response</button>
+        </fieldset><button class="primary" id="generate">Generate responses</button>
       </form>
-      <aside class="card output" aria-busy="false" id="output">
-        <h2>Response</h2>
+      <aside class="comparison" id="output" aria-label="Model response comparison">
+        <h2>Responses</h2>
         <div id="status" class="status" role="status" aria-live="polite">Ready when you are</div>
-        <div id="empty" class="empty">Start with a question.<small>Fill in the context and criteria, then select Generate response to see the answer and probabilities.</small></div>
-        <div id="error" class="error" role="alert" hidden></div>
-        <div id="result" hidden>
-          <div id="answer" class="result"></div>
-          <div id="details"></div>
-          <details open>
-            <summary>Full response JSON</summary>
-            <pre id="json"></pre>
-          </details>
-        </div>
+        <div id="empty" class="empty">Start with a question.<small>Select models and fill in your question, then generate responses to compare their answers.</small></div>
+        <fieldset id="visibility" hidden><legend>Show responses</legend><div id="visibility-options"></div></fieldset>
+        <p id="all-hidden" class="hint" hidden>All panels are hidden. Check a model above to show its response.</p>
+        <div id="responses" class="response-grid"></div>
       </aside>
     </div>
   </main>
@@ -167,28 +174,83 @@
     addRow('choice', ['billing', 'Payments and refunds']); addRow('choice', ['technical', 'Software errors']);
     addRow('score', ['Low']); addRow('score', ['Medium']); addRow('score', ['High']);
     $('add-choice').onclick = () => addRow('choice'); $('add-score').onclick = () => addRow('score'); $('type').onchange = setType; setType();
+    function element(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+    function createPanel(model, index) {
+      const panel = element('article', 'response-panel');
+      panel.id = `response-${index}`;
+      const heading = element('h3', '', model); heading.id = `response-heading-${index}`;
+      panel.setAttribute('aria-labelledby', heading.id);
+      panel.setAttribute('aria-busy', 'true');
+      const status = element('div', 'status', 'Generating…'); status.setAttribute('role', 'status');
+      panel.append(heading, status); $('responses').append(panel);
+      const label = element('label', 'check-label');
+      const toggle = document.createElement('input'); toggle.type = 'checkbox'; toggle.checked = true;
+      toggle.setAttribute('aria-controls', panel.id);
+      toggle.onchange = () => {
+        panel.hidden = !toggle.checked;
+        $('all-hidden').hidden = [...$('visibility-options').querySelectorAll('input')].some(input => input.checked);
+      };
+      label.append(toggle, document.createTextNode(model)); $('visibility-options').append(label);
+      return { panel, status };
+    }
+    async function generateModel(model, payload, view) {
+      const started = performance.now();
+      try {
+        const response = await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...payload, model }) });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Request failed.');
+        const answer = data.answers.output_response;
+        const value = payload.type === 'choice' ? answer.choice : payload.type === 'noul' ? `${(answer.noul * 100).toFixed(1)}% true` : String(answer.score);
+        view.panel.append(element('div', 'result', value));
+        const details = element('div', 'response-details');
+        if (answer.confidence != null) details.append(element('p', '', `Confidence: ${(answer.confidence * 100).toFixed(1)}%`));
+        if (answer.probabilities) Object.entries(answer.probabilities).forEach(([key, probability]) => {
+          details.append(element('p', '', `${key}${answer.legend?.[key] ? ' · ' + answer.legend[key] : ''}: ${(probability * 100).toFixed(1)}%`));
+        });
+        const raw = document.createElement('details');
+        raw.append(element('summary', '', 'Full response JSON'), element('pre', '', JSON.stringify(data, null, 2)));
+        view.panel.append(details, raw);
+        view.status.textContent = `Completed in ${((performance.now() - started) / 1000).toFixed(2)}s`;
+        return true;
+      } catch (error) {
+        view.status.textContent = 'Generation failed';
+        const message = element('div', 'error', error.message); message.setAttribute('role', 'alert'); view.panel.append(message);
+        return false;
+      } finally { view.panel.setAttribute('aria-busy', 'false'); }
+    }
     $('form').onsubmit = async event => {
       event.preventDefault();
+      const models = [...document.querySelectorAll('input[name="models"]:checked')].map(input => input.value);
+      $('model-error').hidden = models.length > 0;
+      if (!models.length) { document.querySelector('input[name="models"]').focus(); return; }
       const type = $('type').value;
       let criteria;
       if (type === 'choice') criteria = [...$('choices').children].map(row => ({ key: row.children[0].value, description: row.children[1].value }));
       if (type === 'score') criteria = [...$('scores').children].map(row => row.children[0].value);
       if (type === 'noul') criteria = $('true').value.trim() || $('false').value.trim() ? { true: $('true').value, false: $('false').value } : null;
-      const payload = { model: $('model').value, state: $('state').value, instructions: $('instructions').value, type, criteria };
-      $('fields').disabled = true; $('generate').disabled = true; $('generate').textContent = 'Generating…'; $('output').setAttribute('aria-busy', 'true');
-      $('error').hidden = true; $('result').hidden = true; $('empty').hidden = true; $('status').textContent = 'Evaluating your question…';
-      const started = performance.now();
+      const payload = { state: $('state').value, instructions: $('instructions').value, type, criteria };
+      $('fields').disabled = true; $('generate').disabled = true; $('generate').textContent = 'Generating…';
+      $('empty').hidden = true; $('responses').replaceChildren(); $('visibility-options').replaceChildren();
+      $('visibility').hidden = false; $('all-hidden').hidden = true;
+      const views = models.map(createPanel);
+      let completed = 0;
+      $('status').textContent = `Completed 0 of ${models.length} models`;
       try {
-        const response = await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Request failed.');
-        const answer = data.answers.output_response;
-        $('answer').textContent = type === 'choice' ? answer.choice : type === 'noul' ? `${(answer.noul * 100).toFixed(1)}% true` : String(answer.score);
-        $('details').replaceChildren();
-        if (answer.confidence != null) { const p = document.createElement('p'); p.textContent = `Confidence: ${(answer.confidence * 100).toFixed(1)}%`; $('details').append(p); }
-        if (answer.probabilities) { Object.entries(answer.probabilities).forEach(([key, value]) => { const p = document.createElement('p'); p.textContent = `${key}${answer.legend?.[key] ? ' · ' + answer.legend[key] : ''}: ${(value * 100).toFixed(1)}%`; $('details').append(p); }); }
-        $('json').textContent = JSON.stringify(data, null, 2); $('result').hidden = false; $('status').textContent = `Completed in ${((performance.now() - started) / 1000).toFixed(2)}s · ${data.model}`;
-      } catch (error) { $('error').textContent = error.message; $('error').hidden = false; $('status').textContent = 'Generation failed'; }
-      finally { $('fields').disabled = false; setType(); $('generate').disabled = false; $('generate').textContent = 'Generate response'; $('output').setAttribute('aria-busy', 'false'); }
+        const results = await Promise.all(models.map(async (model, index) => {
+          const success = await generateModel(model, payload, views[index]);
+          $('status').textContent = `Completed ${++completed} of ${models.length} models`;
+          return success;
+        }));
+        const succeeded = results.filter(Boolean).length;
+        $('status').textContent = `${succeeded} of ${models.length} responses generated${succeeded < models.length ? `; ${models.length - succeeded} failed` : ''}.`;
+      } finally {
+        $('fields').disabled = false; setType(); $('generate').disabled = false; $('generate').textContent = 'Generate responses';
+      }
     };
   </script>
 </body>
