@@ -2,6 +2,10 @@
 
 Local HTML UI backed by the Ollama Python library. No frontend build or web framework needed.
 
+## Demo
+
+https://github.com/user-attachments/assets/d23abedf-b524-4c2b-96aa-98eedcdc3b51
+
 ## Set up virtual environment
 ```sh
 python3 -m venv .venv
